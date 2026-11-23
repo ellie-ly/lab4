@@ -1,16 +1,18 @@
-# React + Vite
+ DCIT26 — Laboratory Exercise 4: React `useState` and `useEffect`
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Guide Questions
 
-Currently, two official plugins are available:
+1. Why do we use two separate states, `searchText` and `debouncedSearch`, instead of only one?
+    `searchText` tracks what the user is typing immediately so the input field stays responsive on every keystroke, while `debouncedSearch` only updates after a 300ms pause so filtering doesn't run unnecessarily while the user is still typing.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+2. What would happen if the debounce effect did not return a cleanup function?
+    Without `clearTimeout(timer)` in the cleanup function, every keystroke would leave an active timer running and schedule `setDebouncedSearch` for each intermediate keystroke instead of waiting only for a pause in typing.
 
-## React Compiler
+ 3. What is the purpose of the dependency array? What happens if it is empty (`[]`)? What happens if it is left out completely?
+    The dependency array tells React when to re-run the effect after renders based on changes to listed values. An empty array (`[]`) runs the effect only once after the component mounts. Leaving the dependency array out completely makes the effect run after every single render.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+4. Why should we avoid sorting the original `products` array directly?
+    Calling `.sort()` directly on `products` mutates the original array in place, which changes the base order of the catalog data and can cause unpredictable UI behavior or make resetting to the default order unreliable.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+5. Is the filtered product list better stored in its own state, or calculated from existing state during rendering? Explain your choice.
+    Calculating it during rendering from existing state (`debouncedSearch`, `category`, `sortOrder`) and `products` is better because it avoids duplicate state, prevents filtered results from getting out of sync with the filter controls, and keeps the data flow simple.
